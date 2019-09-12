@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from .views import Index
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('openhumans/', include('openhumans.urls')),
-    path('', include('main.urls')),
+    path('', Index.as_view(), name='index'),
+    path('', Index.as_view(), name='about'),
+    path('', Index.as_view(), name='list'),
+    path('', Index.as_view(), name='logout'),
 ]

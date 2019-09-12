@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="jumbotron">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col" style="text-align: center;">
+        <img class="img-fluid oh-cnxn-icon" src="{% static 'img/badge.png' %}">
+      </div>
+      <div class="col-md-9 col-lg-10">
+        <h1>Open&nbsp;Humans&nbsp;/ Data&nbsp;Uploader</h1>
+        <p>
+          The Open Humans Data Uploader allows you to upload data files from
+          various sources, including CSV files and other exported data.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-9 offset-md-3 col-lg-10 offset-lg-2">
+        <a href="{{ auth_url }}" class="btn btn-primary">
+          Log in via Open Humans
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include 'main/partials/about-1.html' %}
+
+{% endblock main %}
