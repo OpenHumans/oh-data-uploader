@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from .views import Index
+from .views import Dashboard, Index
 
 urlpatterns = [
     path('', Index.as_view(), name='index'),
+    path('dashboard', Dashboard.as_view(), name='dashboard'),
     path('', Index.as_view(), name='about'),
     path('', Index.as_view(), name='list'),
     path('', Index.as_view(), name='logout'),

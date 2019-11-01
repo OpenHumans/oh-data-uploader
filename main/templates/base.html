@@ -35,13 +35,8 @@
           </ul>
           <ul class='navbar-nav ml-auto'>
             {% if request.user.is_authenticated %}
-              {% if request.user.openhumansmember.fitbituser %}
               <li class="nav-item">
                   <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-              </li>
-              {% endif %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'setup' %}">Setup</a>
               </li>
             {% endif %}
             <li class="nav-item">
