@@ -1,0 +1,35 @@
+{% load static %}
+<script>
+    var access_token = "{{ request.user.openhumansmember.access_token }}";
+    var member_id = {{ request.user.openhumansmember.oh_id }};
+    var csrf_token = "{{ csrf_token }}";
+    var oh_direct_upload_url = "{{ oh_direct_upload_url }}";
+    var oh_direct_upload_complete_url = "{{ oh_direct_upload_complete_url }}";
+</script>
+
+<div id='upload_form'>
+<form method="get" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="upload_description">Datatype:</label>
+    <select name="upload_description" id="upload_datatype">
+        <option value=""></option>
+        {% for dt in datatypes %}
+        <option value="{{ dt.id }}">{{ dt.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" class="form-control"
+        name="upload_description"
+        id="upload_description"
+        placeholder="Optional Description">
+    <input type="file" name="upload_file" id="upload_file">
+    <input type="button" class="btn btn-primary" value="Upload your data" onClick="startUpload()">
+</form>
+<p id="infotext">
+    <small>
+    The Javascript uploader has failed for some users in the past. You could try another browser
+    or <a href="{% url 'index' %}">use the simpler upload form</a> if you prefer that.
+    </small>
+</p>
+</div>
+<script src="{% static 'js/upload.js' %}"></script>
+    

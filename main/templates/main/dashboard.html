@@ -20,19 +20,25 @@
 
 <h2>Your data</h2>
 
-{% if data_files %}
+{% if datafiles %}
 <table class="table table-hover">
     <thead>
         <tr>
             <th scope="col">name</th>
+            <th scope="col">datatypes</th>
             <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
-        {% for data_file in data_files %}
+        {% for datafile in datafiles %}
         <tr>
             <td>
-                {{ data_file.basename }}
+                {{ datafile.basename }}
+            </td>
+            <td>
+                {% for dt in datafile.datatypes %}
+                {{ dt.name }}{% if not forloop.first %}<br>{% endif %}
+                {% endfor %}
             </td>
             <td>
                 <a class="btn btn-primary btn-sm" href="{{ data_file.download_url }}" download>Download</a>

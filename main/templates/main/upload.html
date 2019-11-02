@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block main %}
+{% load static %}
+<div class="row">
+  <div class="col-md-9 col-lg-10">
+      <h1 class="mb-3">Upload a file</h1>
+      <p>
+      Use the form below to upload a file to upload a file to your Open Humans account.
+    </p>
+  </div>
+  <div class="col d-none d-md-block" style="text-align: center;">
+    <img class="oh-cnxn-icon" src="{% static 'img/fitbit-intraday-icon.png' %}">
+  </div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-md">
+    {% include 'main/partials/upload-form.html' %}
+  </div>
+{% endblock main %}
