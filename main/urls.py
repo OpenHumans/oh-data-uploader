@@ -14,15 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 
-from .views import Dashboard, Index, UploadFileView
+from .views import Dashboard, DeleteFileView, Index, UploadFileView
 
 urlpatterns = [
     path('', Index.as_view(), name='index'),
-    path('dashboard', Dashboard.as_view(), name='dashboard'),
-    path('upload', UploadFileView.as_view(), name='upload'),
-    path('', Index.as_view(), name='about'),
-    path('', Index.as_view(), name='list'),
     path('', Index.as_view(), name='logout'),
+    path('', Index.as_view(), name='about'),
+
+    # File management
+    path('dashboard', Dashboard.as_view(), name='dashboard'),
+    re_path(r'delete/(?P<datafile_id>[0-9]+)/$',
+        DeleteFileView.as_view(), name='delete'),
+    path('upload', UploadFileView.as_view(), name='upload'),
 ]

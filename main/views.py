@@ -1,11 +1,15 @@
 from django.conf import settings
 from django.contrib.auth import logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.views.generic import FormView, TemplateView
 
+import ohapi
 from openhumans.models import OpenHumansMember
 
-from .utils import get_datatypes, get_datatypes_by_id, get_datatype_id_from_url
+from .utils import (
+    get_datafiles_with_datatypes,
+    get_datatypes, get_datatypes_by_id, get_datatype_id_from_url)
 
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
 OH_API_BASE = OH_BASE_URL + '/api/direct-sharing'
@@ -37,26 +41,20 @@ class Index(TemplateView):
         return context
 
 
-class Dashboard(TemplateView):
+class Dashboard(LoginRequiredMixin, TemplateView):
 
     template_name = "main/dashboard.html"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        datafiles = self.request.user.openhumansmember.list_files()
-        datatypes_by_id = get_datatypes_by_id()
-        for df in datafiles:
-            dt_ids = []
-            for url in df['datatypes']:
-                dt_ids.append(get_datatype_id_from_url(url))
-            df['datatypes'] = [datatypes_by_id[dt_id] for dt_id in dt_ids]
+        datafiles = get_datafiles_with_datatypes(self.request.user)
         context.update({
             'datafiles': datafiles,
         })
         return context
 
 
-class UploadFileView(TemplateView):
+class UploadFileView(LoginRequiredMixin, TemplateView):
 
     template_name = "main/upload.html"
 
@@ -66,5 +64,31 @@ class UploadFileView(TemplateView):
             'datatypes': get_datatypes(),
             'oh_direct_upload_url': OH_DIRECT_UPLOAD,
             'oh_direct_upload_complete_url': OH_DIRECT_UPLOAD_COMPLETE_URL,
+        })
+        return context
+
+
+class DeleteFileView(LoginRequiredMixin, TemplateView):
+    template_name = "main/delete.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.datafile_id = kwargs['datafile_id']
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        ohapi.api.delete_file(
+            access_token=request.user.openhumansmember.get_access_token(),
+            project_member_id=request.user.openhumansmember.oh_id,
+            base_url=OH_BASE_URL,
+            file_id=self.datafile_id,
+        )
+        return redirect('dashboard')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        datafiles = get_datafiles_with_datatypes(self.request.user)
+        datafile = [df for df in datafiles if int(df['id']) == int(self.datafile_id)][0]
+        context.update({
+            'datafile': datafile,
         })
         return context

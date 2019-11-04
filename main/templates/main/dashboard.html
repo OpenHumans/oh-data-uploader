@@ -3,14 +3,13 @@
 
 {% block main %}
 <div class="row">
-    <div class="col-md-9 col-lg-10">
-        <h1 class="mb-3">Dashboard: File Uploader</h1>
-        <p>
-            Your data will be stored in files within your Open Humans account.
-            Files are listed below, and can also be seen in on
-            <a href="#">this
-            project's activity page</a> in the Open Humans website.
-        </p>
+  <div class="col-md-9 col-lg-10">
+    <h1 class="mb-3">Dashboard: File Uploader</h1>
+      <p>
+        Your data will be stored in files within your Open Humans account.
+        Files are listed below, and can also be seen in on
+        <a href="#">this project's activity page</a> in the Open Humans website.
+      </p>
     </div>
     <div class="col d-none d-md-block" style="text-align: center;">
         <img class="oh-cnxn-icon" src="{% static 'img/badge.png' %}">
@@ -21,31 +20,32 @@
 <h2>Your data</h2>
 
 {% if datafiles %}
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th scope="col">name</th>
-            <th scope="col">datatypes</th>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for datafile in datafiles %}
-        <tr>
-            <td>
-                {{ datafile.basename }}
-            </td>
-            <td>
-                {% for dt in datafile.datatypes %}
-                {{ dt.name }}{% if not forloop.first %}<br>{% endif %}
-                {% endfor %}
-            </td>
-            <td>
-                <a class="btn btn-primary btn-sm" href="{{ data_file.download_url }}" download>Download</a>
-            </td>
-        </tr>
+<table class="table table-hover table-sm" style="font-size:0.9rem;">
+  <thead>
+    <tr>
+      <th scope="col">name</th>
+      <th scope="col">datatypes</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for datafile in datafiles %}
+    <tr>
+      <td>
+        {{ datafile.basename }}
+      </td>
+      <td>
+        {% for dt in datafile.datatypes %}
+        {{ dt.name }}{% if not forloop.first %}<br>{% endif %}
         {% endfor %}
-    </tbody>
+      </td>
+      <td>
+        <a class="btn btn-primary btn-xs" href="{{ datafile.download_url }}" download>Download</a>
+        <a class="btn btn-danger btn-xs" href="{% url 'delete' datafile.id %}">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% else %}
 <p>

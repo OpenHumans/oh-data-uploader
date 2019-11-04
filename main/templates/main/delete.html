@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<p>
+  Delete the file "{{ datafile.basename }}" from your Open Humans account?
+</p>
+<div class="row">
+  <div class="col-md">
+    <form class="form-inline mt-2 mt-md-0" action="{% url 'delete' datafile.id %}" method="post">
+      {% csrf_token %}
+      <a class="btn btn-default mr-3" href="{% url 'dashboard' %}">Cancel</a>
+      <button class="btn btn-danger" type="submit">Delete "{{ datafile.basename }}"</button>
+    </form>
+  </div>
+</div>
+{% endblock main %}

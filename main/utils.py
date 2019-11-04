@@ -26,3 +26,14 @@ def get_datatype_id_from_url(url):
     url_parsed = urllib.parse.urlparse(url)
     dtid = re.match('/api/public/datatype/(?P<dtid>.*)/', url_parsed.path).group('dtid')
     return int(dtid)
+
+
+def get_datafiles_with_datatypes(user):
+    datafiles = user.openhumansmember.list_files()
+    datatypes_by_id = get_datatypes_by_id()
+    for df in datafiles:
+        dt_ids = []
+        for url in df['datatypes']:
+            dt_ids.append(get_datatype_id_from_url(url))
+        df['datatypes'] = [datatypes_by_id[dt_id] for dt_id in dt_ids]
+    return datafiles
