@@ -7,9 +7,9 @@ verify_ssl = true
 
 [packages]
 django = "*"
-django-open-humans = {editable = true,path = "/home/mad/projects/django-open-humans"}
 django-heroku = "*"
 gunicorn = "*"
+django-open-humans = "*"
 
 [requires]
 python_version = "3.6"
