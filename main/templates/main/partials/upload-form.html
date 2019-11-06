@@ -8,28 +8,21 @@
 </script>
 
 <div id='upload_form'>
-<form method="get" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label for="upload_description">Datatype:</label>
-    <select name="upload_description" id="upload_datatype">
-        <option value=""></option>
-        {% for dt in datatypes %}
-        <option value="{{ dt.id }}">{{ dt.name }}</option>
-        {% endfor %}
-    </select>
-    <input type="text" class="form-control"
-        name="upload_description"
-        id="upload_description"
-        placeholder="Optional Description">
-    <input type="file" name="upload_file" id="upload_file">
-    <input type="button" class="btn btn-primary" value="Upload your data" onClick="startUpload()">
-</form>
-<p id="infotext">
-    <small>
-    The Javascript uploader has failed for some users in the past. You could try another browser
-    or <a href="{% url 'index' %}">use the simpler upload form</a> if you prefer that.
-    </small>
-</p>
+    <form method="get" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" id="upload_datatype" name="upload_datatype" value="{{ datatype.id }}">
+        <div class="form-group">
+          <label for="upload_file">Select file:</label>
+          <input type="file" name="upload_file" id="upload_file">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control"
+            name="upload_description"
+            id="upload_description"
+            placeholder="Optional description of file.">
+        </div>
+        <input type="button" class="btn btn-primary" value="Upload file" onClick="startUpload()">
+    </form>
 </div>
 <script src="{% static 'js/upload.js' %}"></script>
     

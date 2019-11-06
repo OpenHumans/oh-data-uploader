@@ -10,6 +10,8 @@ django = "*"
 django-heroku = "*"
 gunicorn = "*"
 django-open-humans = "*"
+markdown = "*"
+bleach = "*"
 
 [requires]
 python_version = "3.6"

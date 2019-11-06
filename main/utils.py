@@ -6,8 +6,11 @@ from django.conf import settings
 import requests
 
 
-def get_datatypes():
-    url = "{}/api/public/datatypes/".format(settings.OPENHUMANS_OH_BASE_URL)
+def get_datatypes(uploadable=False):
+    url = "{}/api/public/datatypes/".format(
+        settings.OPENHUMANS_OH_BASE_URL)
+    if uploadable:
+        url = url + "?uploadable=True"
     response_json = requests.get(url).json()
     datatypes = response_json['results']
     while response_json['next']:
@@ -37,3 +40,6 @@ def get_datafiles_with_datatypes(user):
             dt_ids.append(get_datatype_id_from_url(url))
         df['datatypes'] = [datatypes_by_id[dt_id] for dt_id in dt_ids]
     return datafiles
+
+def sort_datatypes(datatypes):
+    return sorted(datatypes, key=lambda dt: dt['name'])

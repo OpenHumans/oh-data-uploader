@@ -2,19 +2,30 @@
 {% load static %}
 
 {% block main %}
-<div class="row">
-  <div class="col-md-9 col-lg-10">
-    <h1 class="mb-3">Dashboard: File Uploader</h1>
-      <p>
-        Your data will be stored in files within your Open Humans account.
-        Files are listed below, and can also be seen in on
-        <a href="#">this project's activity page</a> in the Open Humans website.
-      </p>
-    </div>
-    <div class="col d-none d-md-block" style="text-align: center;">
-        <img class="oh-cnxn-icon" src="{% static 'img/badge.png' %}">
-    </div>
-</div>
+<h1 class="mb-3">Dashboard: File Uploader</h1>
+<p>
+  Your data will be stored in files within your Open Humans account.
+  Files are listed below, and can also be seen in on
+  <a href="#">this project's activity page</a> in the Open Humans website.
+</p>
+<form method="get" action="{% url 'upload' %}">
+  <label for="upload_description">Select datatype for upload:</label>
+  <select name="datatype_id" id="datatype_id">
+      {% for dt in datatypes %}
+      <option value="{{ dt.id }}">{{ dt.name }}</option>
+      {% endfor %}
+  </select>
+  <input type="submit" class="btn btn-primary" value="Upload this datatype">
+</form>
+
+<hr>
+
+<p class="small">
+  Don't see the DataType listed? You can explore and edit these, and create
+  one if needed. You need to the DataType as "uploadable" to show up here.
+</p>
+<a class="btn btn-default btn-sm" href="{{ open_humans_datatype_list }}">Go to DataTypes management</a>
+
 <hr>
 
 <h2>Your data</h2>

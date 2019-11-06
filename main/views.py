@@ -8,10 +8,12 @@ import ohapi
 from openhumans.models import OpenHumansMember
 
 from .utils import (
-    get_datafiles_with_datatypes,
-    get_datatypes, get_datatypes_by_id, get_datatype_id_from_url)
+    get_datafiles_with_datatypes, get_datatypes,
+    get_datatypes_by_id, get_datatype_id_from_url,
+    sort_datatypes)
 
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
+OH_DATATYPES_MANAGEMENT = OH_BASE_URL + '/data-management/datatypes/'
 OH_API_BASE = OH_BASE_URL + '/api/direct-sharing'
 OH_DIRECT_UPLOAD = OH_API_BASE + '/project/files/upload/direct/'
 OH_DIRECT_UPLOAD_COMPLETE_URL = OH_API_BASE + '/project/files/upload/complete/'
@@ -49,7 +51,9 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(*args, **kwargs)
         datafiles = get_datafiles_with_datatypes(self.request.user)
         context.update({
+            'datatypes': sort_datatypes(get_datatypes(uploadable=True)),
             'datafiles': datafiles,
+            'open_humans_datatypes_list': OH_DATATYPES_MANAGEMENT,
         })
         return context
 
@@ -58,10 +62,14 @@ class UploadFileView(LoginRequiredMixin, TemplateView):
 
     template_name = "main/upload.html"
 
+    def get(self, request, *args, **kwargs):
+        self.datatype = get_datatypes_by_id()[int(request.GET['datatype_id'])]
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update({
-            'datatypes': get_datatypes(),
+            'datatype': self.datatype,
             'oh_direct_upload_url': OH_DIRECT_UPLOAD,
             'oh_direct_upload_complete_url': OH_DIRECT_UPLOAD_COMPLETE_URL,
         })

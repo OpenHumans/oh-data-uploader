@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
-{% block main %}
 {% load static %}
+{% load utilities %}
+
+{% block main %}
 <div class="row">
   <div class="col-md-9 col-lg-10">
       <h1 class="mb-3">Upload a file</h1>
@@ -13,10 +15,28 @@
     <img class="oh-cnxn-icon" src="{% static 'img/fitbit-intraday-icon.png' %}">
   </div>
 </div>
-<hr>
-<div class="row">
-  <div class="col-md">
-    {% include 'main/partials/upload-form.html' %}
+
+<div class="card mt-3 mb-4">
+  <div class="card-header">
+    <h1>{{ datatype.name }}</h1>
+    <h5 class="card-subtitle">{{ datatype.description }}</h5>
   </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+      {% include 'main/partials/upload-form.html' %}
+      <p class="text-muted">
+        <small>
+        The Javascript uploader has failed for some users in the past. You could try another browser
+        or <a href="{% url 'index' %}">use the simpler upload form</a> if you prefer that.
+        </small>
+      </p>
+    </li>
+    {% if datatype.details %}
+    <li class="list-group-item">
+      {{ datatype.details|markdown }}
+    </li>
+    {% endif %}
+  </ul>
 </div>
+
 {% endblock main %}
