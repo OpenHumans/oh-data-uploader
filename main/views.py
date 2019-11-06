@@ -47,12 +47,21 @@ class Dashboard(LoginRequiredMixin, TemplateView):
 
     template_name = "main/dashboard.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.datafiles = get_datafiles_with_datatypes(self.request.user)
+        except Exception as exception:
+            print(exception)
+            if self.request.user.is_authenticated:
+                logout(self.request)
+                return redirect('index')
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        datafiles = get_datafiles_with_datatypes(self.request.user)
         context.update({
             'datatypes': sort_datatypes(get_datatypes(uploadable=True)),
-            'datafiles': datafiles,
+            'datafiles': self.datafiles,
             'open_humans_datatypes_list': OH_DATATYPES_MANAGEMENT,
         })
         return context
