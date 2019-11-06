@@ -62,7 +62,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         context.update({
             'datatypes': sort_datatypes(get_datatypes(uploadable=True)),
             'datafiles': self.datafiles,
-            'open_humans_datatypes_list': OH_DATATYPES_MANAGEMENT,
+            'open_humans_datatype_list': OH_DATATYPES_MANAGEMENT,
         })
         return context
 
