@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, View
 
 import ohapi
 from openhumans.models import OpenHumansMember
@@ -19,20 +19,35 @@ OH_DIRECT_UPLOAD = OH_API_BASE + '/project/files/upload/direct/'
 OH_DIRECT_UPLOAD_COMPLETE_URL = OH_API_BASE + '/project/files/upload/complete/'
 
 
-class Index(TemplateView):
+class RedirectPageMixin(object):
+    """hack to store page and use to redirect once logged in"""
+    curr_page = None
 
+    def get_curr_page(self):
+        return self.curr_page
+
+    def dispatch(self, request, *args, **kwargs):
+        curr_page = self.get_curr_page()
+        if request.user.is_anonymous:
+            if curr_page:
+                request.session['latest_anon'] = curr_page
+        else:
+            if curr_page:
+                request.session['latest_auth'] = curr_page
+            if 'latest_anon' in request.session:
+                latest_anon = request.session.pop('latest_anon')
+                return redirect(latest_anon)
+        return super().dispatch(request, *args, **kwargs)
+
+
+class Index(RedirectPageMixin, TemplateView):
+    curr_page = 'index'
     template_name = "main/index.html"
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect('dashboard')
         return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        """Log out"""
-        if request.user.is_authenticated:
-            logout(request)
-            return redirect('index')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -43,6 +58,18 @@ class Index(TemplateView):
         return context
 
 
+class LogoutView(View):
+
+    def post(self, request, *args, **kwargs):
+        """Log out"""
+        if request.user.is_authenticated:
+            latest_auth = request.session.get('latest_auth', None)
+            logout(request)
+            if latest_auth:
+                return redirect(latest_auth)
+            return redirect('index')
+
+
 class Dashboard(LoginRequiredMixin, TemplateView):
 
     template_name = "main/dashboard.html"
@@ -51,7 +78,8 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         try:
             self.datafiles = get_datafiles_with_datatypes(self.request.user)
         except Exception as exception:
-            print(exception)
+            # print(exception)
+            # Can arise due to bad token from revoked auth, log out to fix.
             if self.request.user.is_authenticated:
                 logout(self.request)
                 return redirect('index')
@@ -67,9 +95,13 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         return context
 
 
-class UploadFileView(LoginRequiredMixin, TemplateView):
+class UploadFileView(RedirectPageMixin, TemplateView):
 
     template_name = "main/upload.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.datatype = get_datatypes_by_id()[int(request.GET['datatype_id'])]
@@ -78,11 +110,16 @@ class UploadFileView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update({
+            'auth_url': OpenHumansMember.get_auth_url(),
             'datatype': self.datatype,
             'oh_direct_upload_url': OH_DIRECT_UPLOAD,
             'oh_direct_upload_complete_url': OH_DIRECT_UPLOAD_COMPLETE_URL,
         })
         return context
+
+    def get_curr_page(self):
+        curr = '/upload?datatype_id={}'.format(self.request.GET['datatype_id'])
+        return(curr)
 
 
 class DeleteFileView(LoginRequiredMixin, TemplateView):

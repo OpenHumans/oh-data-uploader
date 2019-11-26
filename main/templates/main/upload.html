@@ -23,13 +23,20 @@
   </div>
   <ul class="list-group list-group-flush">
     <li class="list-group-item">
-      {% include 'main/partials/upload-form.html' %}
-      <p class="text-muted">
-        <small>
-        The Javascript uploader has failed for some users in the past. You could try another browser
-        or <a href="{% url 'index' %}">use the simpler upload form</a> if you prefer that.
-        </small>
-      </p>
+      {% if request.user.is_anonymous %}
+        <p>Connect Open Humans to enable upload and storage to your account.</p>
+        <a href="{{ auth_url }}" class="btn btn-primary">
+            Log in via Open Humans
+          </a>
+      {% else %}
+        {% include 'main/partials/upload-form.html' %}
+        <!--<p class="text-muted">
+          <small>
+          The Javascript uploader has failed for some users in the past. You could try another browser
+          or <a href="{% url 'index' %}">use the simpler upload form</a> if you prefer that.
+          </small>
+        </p>-->
+      {% endif %}
     </li>
     {% if datatype.details %}
     <li class="list-group-item">

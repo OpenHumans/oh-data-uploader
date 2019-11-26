@@ -16,11 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-from .views import Dashboard, DeleteFileView, Index, UploadFileView
+from .views import Dashboard, DeleteFileView, Index, LogoutView, UploadFileView
 
 urlpatterns = [
     path('', Index.as_view(), name='index'),
-    path('', Index.as_view(), name='logout'),
+    path('logout', LogoutView.as_view(), name='logout'),
     path('', Index.as_view(), name='about'),
 
     # File management
