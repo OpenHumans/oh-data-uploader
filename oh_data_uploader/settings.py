@@ -144,3 +144,7 @@ OPENHUMANS_OH_BASE_URL=os.getenv('OPENHUMANS_OH_BASE_URL', 'http://127.0.0.1:800
 # Configure Django App for Heroku.
 import django_heroku
 django_heroku.settings(locals())
+
+ON_HEROKU = True if os.getenv('ON_HEROKU', 'False').lower() == 'true' else False
+if ON_HEROKU:
+    SECURE_SSL_REDIRECT = True
